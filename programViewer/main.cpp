@@ -86,7 +86,6 @@ int main(int argc, char* argv[]) {
         free(fullPath);
         return EXIT_FAILURE;
     }
-
     while (ReadDirectoryChangesW(hMalwareDirectory, buf, sizeof(buf), TRUE, filterFlags, &bytesRead, NULL, NULL)) {
         notifyInfo = (FILE_NOTIFY_INFORMATION*)buf;
         while (notifyInfo) {
@@ -96,11 +95,14 @@ int main(int argc, char* argv[]) {
             else if (notifyInfo->Action == FILE_ACTION_REMOVED) {
                 printf("%s%s File Removed:%.*ls%s\n", eColor, e, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
             }
-            else if (notifyInfo->Action == FILE_ACTION_MODIFIED) {
-                printf("%s%s File Modified. Modified File Name:%.*ls%s\n", iColor, i, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
-            }
             else if (notifyInfo->Action == FILE_ACTION_RENAMED_NEW_NAME) {
-                printf("%s%s File Changed Name: %.*ls%s\n", iColor, i, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
+                printf("%s%s File Changed Name: %.*ls%s\n", sColor, i, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
+            }
+            else if (notifyInfo->Action == FILE_ACTION_RENAMED_OLD_NAME) {
+                printf("%s%s File Old Name: %.*ls%s\n", sColor, i, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
+            }
+            else if (notifyInfo->Action == FILE_ACTION_MODIFIED) {
+                printf("%s%s File Modified:%.*ls%s\n", iColor, i, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
             }
             notifyInfo = notifyInfo->NextEntryOffset > 0 ? (FILE_NOTIFY_INFORMATION*)((LPBYTE)notifyInfo + notifyInfo->NextEntryOffset) : NULL;
         }
