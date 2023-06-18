@@ -71,6 +71,7 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
     PID = atoi(argv[1]);
+    printf("%s%s Target PID: %ld\n%s", sColor, s, PID, rColor);
     wchar_t* fullPath = GetProcessFullPath(PID);
     if (fullPath == NULL) {
         printf("%s%s Failed to get process full path. Error Code: %lx%s\n", eColor, e, GetLastError(), rColor);
@@ -86,6 +87,7 @@ int main(int argc, char* argv[]) {
         free(fullPath);
         return EXIT_FAILURE;
     }
+    printf("%s%s Listening on Directory....!%s\n", iColor, i, rColor);
     while (ReadDirectoryChangesW(hMalwareDirectory, buf, sizeof(buf), TRUE, filterFlags, &bytesRead, NULL, NULL)) {
         notifyInfo = (FILE_NOTIFY_INFORMATION*)buf;
         while (notifyInfo) {
