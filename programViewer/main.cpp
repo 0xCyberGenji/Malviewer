@@ -87,7 +87,7 @@ int main(int argc, char* argv[]) {
    
     wchar_t* fullPath = GetProcessFullPath(PID);
     if (fullPath == NULL) {
-        printf("%s%s Failed to get process full path. Error Code: %lx%s\n", eColor, e, GetLastError(), rColor);
+        printf("%s%s Failed to get process full path. Error Code: 0x%lx%s\n", eColor, e, GetLastError(), rColor);
         return EXIT_FAILURE;
     }
     programPath = fullPath;
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
 
     hMalwareDirectory = CreateFileW(programPath, FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
     if (hMalwareDirectory == INVALID_HANDLE_VALUE) {
-        printf("Failed to open directory: %ls\n\n", programPath);
+        printf("Failed to open directory: %ls. Error Code: 0x%lx\n\n", programPath, GetLastError());
         free(fullPath);
         return EXIT_FAILURE;
     }
@@ -111,16 +111,16 @@ int main(int argc, char* argv[]) {
                 }
             }
             else if (notifyInfo->Action == FILE_ACTION_REMOVED) {
-                printf("%s%s %02d:%02d:%02d: | File Removed:%.*ls%s\n", eColor, e, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
+                printf("%s%s %02d:%02d:%02d: | File Removed:%.*ls%s\n", eColor, e, hour, min, sec, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
             }
             else if (notifyInfo->Action == FILE_ACTION_RENAMED_NEW_NAME) {
-                printf("%s%s %02d:%02d:%02d: File Changed Name: %.*ls%s\n", sColor, i, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
+                printf("%s%s %02d:%02d:%02d: File Changed Name: %.*ls%s\n", sColor, i, hour, min, sec, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
             }
             else if (notifyInfo->Action == FILE_ACTION_RENAMED_OLD_NAME) {
                 printf("%s%s %02d:%02d:%02d: File Old Name: %.*ls%s\n", sColor, i, hour, min, sec, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
             }
             else if (notifyInfo->Action == FILE_ACTION_MODIFIED) {
-                printf("%s%s %02d:%02d:%02d: File Modified: %.*ls%s\n", eColor, i, hour, min, sec, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
+                printf("%s%s %02d:%02d:%02d: File Modified: %.*ls%s\n", iColor, i, hour, min, sec, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
             }
             notifyInfo = notifyInfo->NextEntryOffset > 0 ? (FILE_NOTIFY_INFORMATION*)((LPBYTE)notifyInfo + notifyInfo->NextEntryOffset) : NULL;
         }
