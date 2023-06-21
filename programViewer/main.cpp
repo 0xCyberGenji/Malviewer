@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <psapi.h>
+#include <time.h>
+
 
 /* Message Colors */
 #define eColor "\033[0;31m" /* Error Color:  Red*/
@@ -59,6 +61,17 @@ void RemoveFileNameFromPath(wchar_t* path) {
 }
 
 int main(int argc, char* argv[]) {
+    time_t t = time(NULL); // Şu anki zamanı al
+    struct tm *timeinfo = localtime(&t); // Yerel saat bilgisini elde et
+
+    // Saat ve tarih bilgisini değişkenlere aktar
+    int hour = timeinfo->tm_hour;
+    int min = timeinfo->tm_min;
+    int sec = timeinfo->tm_sec;
+    int day = timeinfo->tm_mday;
+    int month = timeinfo->tm_mon + 1; // Ay değeri 0-11 arasında olduğu için 1 ekleyerek ayın değerini al
+    int year = timeinfo->tm_year + 1900; // Yıl değeri 1900'den başladığı için 1900 ekleyerek yılın değerini al
+
     DWORD PID, bytesRead = 0;
     DWORD filterFlags = FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_ATTRIBUTES |
         FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_SECURITY;
@@ -93,22 +106,22 @@ int main(int argc, char* argv[]) {
         notifyInfo = (FILE_NOTIFY_INFORMATION*)buf;
         while (notifyInfo) {
             if (notifyInfo->Action == FILE_ACTION_ADDED) {
-                printf("%s%s | New File Added. File Name: %.*ls%s\n", iColor, i, notifyInfo->FileNameLength / sizeof(wchar_t), notifyInfo->FileName, iColor);
+                printf("%s%s %02d:%02d:%02d | New File Added. File Name: %.*ls%s\n", iColor, i, hour, min, sec, notifyInfo->FileNameLength / sizeof(wchar_t), notifyInfo->FileName, iColor);
                 if (!(notifyInfo->Action == FILE_ACTION_MODIFIED)) {
-                    printf("%s%s |--> File Modified: %.*ls%s\n", iColor, i, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
+                    printf("%s%s %02d:%02d:%02d: | File Modified: %.*ls%s\n", iColor, i, hour, min, sec, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
                 }
             }
             else if (notifyInfo->Action == FILE_ACTION_REMOVED) {
-                printf("%s%s File Removed:%.*ls%s\n", eColor, e, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
+                printf("%s%s %02d:%02d:%02d: | File Removed:%.*ls%s\n", eColor, e, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
             }
             else if (notifyInfo->Action == FILE_ACTION_RENAMED_NEW_NAME) {
-                printf("%s%s File Changed Name: %.*ls%s\n", sColor, i, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
+                printf("%s%s %02d:%02d:%02d: File Changed Name: %.*ls%s\n", sColor, i, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
             }
             else if (notifyInfo->Action == FILE_ACTION_RENAMED_OLD_NAME) {
-                printf("%s%s File Old Name: %.*ls%s\n", sColor, i, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
+                printf("%s%s %02d:%02d:%02d: File Old Name: %.*ls%s\n", sColor, i, hour, min, sec, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
             }
             else if (notifyInfo->Action == FILE_ACTION_MODIFIED) {
-                printf("%s%s File Modified: %.*ls%s\n", eColor, i, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
+                printf("%s%s %02d:%02d:%02d: File Modified: %.*ls%s\n", eColor, i, hour, min, sec, notifyInfo->FileNameLength / 2, notifyInfo->FileName, rColor);
             }
             notifyInfo = notifyInfo->NextEntryOffset > 0 ? (FILE_NOTIFY_INFORMATION*)((LPBYTE)notifyInfo + notifyInfo->NextEntryOffset) : NULL;
         }
