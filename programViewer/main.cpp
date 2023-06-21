@@ -61,16 +61,15 @@ void RemoveFileNameFromPath(wchar_t* path) {
 }
 
 int main(int argc, char* argv[]) {
-    time_t t = time(NULL); // Şu anki zamanı al
-    struct tm *timeinfo = localtime(&t); // Yerel saat bilgisini elde et
+    time_t t = time(NULL); 
+    struct tm *timeinfo = localtime(&t); 
 
-    // Saat ve tarih bilgisini değişkenlere aktar
     int hour = timeinfo->tm_hour;
     int min = timeinfo->tm_min;
     int sec = timeinfo->tm_sec;
     int day = timeinfo->tm_mday;
-    int month = timeinfo->tm_mon + 1; // Ay değeri 0-11 arasında olduğu için 1 ekleyerek ayın değerini al
-    int year = timeinfo->tm_year + 1900; // Yıl değeri 1900'den başladığı için 1900 ekleyerek yılın değerini al
+    int month = timeinfo->tm_mon + 1; 
+    int year = timeinfo->tm_year + 1900; 
 
     DWORD PID, bytesRead = 0;
     DWORD filterFlags = FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_ATTRIBUTES |
